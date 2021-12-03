@@ -1,15 +1,12 @@
 package com.softradix.tinderjetpackdemo.views.activities
 
-import android.content.BroadcastReceiver
-import android.content.IntentFilter
-import android.net.ConnectivityManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,30 +27,24 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.rememberPagerState
 import com.softradix.tinderjetpackdemo.R
-import com.softradix.tinderjetpackdemo.network.NetworkChangeReceiver
+import com.softradix.tinderjetpackdemo.network.ConnectivityStatus
 import com.softradix.tinderjetpackdemo.utils.PreferenceClass
 import com.softradix.tinderjetpackdemo.utils.PreferenceClass.Companion.TOKEN
 import com.softradix.tinderjetpackdemo.utils.callActivity
 import com.softradix.tinderjetpackdemo.views.activities.ui.theme.TinderJetPackDemoTheme
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 
 class DashBoardActivity : ComponentActivity() {
+    @ExperimentalPagerApi
+    @ExperimentalCoroutinesApi
     @ExperimentalMaterialApi
 
-    private lateinit var mInterNetCheckReceiver: BroadcastReceiver
-
-    @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        mInterNetCheckReceiver =
-            NetworkChangeReceiver()      // register check internet broadcast receiver
-        @Suppress("DEPRECATION")
-        registerReceiver(
-            mInterNetCheckReceiver,
-            IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
-        )
 
         setContent {
             TinderJetPackDemoTheme {
@@ -144,12 +135,14 @@ class DashBoardActivity : ComponentActivity() {
                                 //to move to the home screen when back pressed
                                 popUpTo("home_screen")
                             }
-
                         }
                     )
                 }) {
                     Navigation(navHostController = navController)
                 }
+
+                //internet check
+                ConnectivityStatus()
             }
         }
 
@@ -157,6 +150,7 @@ class DashBoardActivity : ComponentActivity() {
     }
 
 
+    @ExperimentalPagerApi
     @Composable
     fun Navigation(navHostController: NavHostController) {
         NavHost(navController = navHostController, startDestination = "home_screen") {
@@ -173,13 +167,6 @@ class DashBoardActivity : ComponentActivity() {
                 ProfileScreen()
             }
         }
-    }
-
-
-    @ExperimentalMaterialApi
-    override fun onDestroy() {
-        super.onDestroy()
-        unregisterReceiver(mInterNetCheckReceiver)      // unregister check internet broadcast receiver
     }
 }
 
@@ -249,12 +236,53 @@ fun HomeScreen() {
     }
 }
 
+@ExperimentalPagerApi
 @Composable
 fun MatchScreen() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(text = "Match Screen")
+    TabPage.values().size
+    val pagerState = rememberPagerState()
+    var tabPage by remember { mutableStateOf(TabPage.Likes) }
+    val scope = rememberCoroutineScope()
+    Scaffold(topBar = {
+        TabHome(
+            // if you use no pagerState
+            selectedTabIndex = tabPage.ordinal, onSelectedTabPage = { tabPage = it },
+        )
+        /*TabHome(
+            selectedTabIndex = pagerState.currentPage,
+            onSelectedTabPage = {
+                scope.launch {
+                    pagerState.animateScrollToPage(it.ordinal)
+                }
+            },
+        )*/
+    }) {
+        Column() {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = tabPage.name)
+            }
+        }
+
+        /*  HorizontalPager(count = TabPage.values().size, state = pagerState) { index ->
+              Column(Modifier.fillMaxSize()) {
+                  Text(text = TabPage.values()[index].name)
+
+                  when (index) {
+                      0 -> MatchScreen()
+                      1 -> LikeScreen()
+                  }
+              }
+
+          }*/
     }
 }
+
+
+@Composable
+fun LikeScreen() {
+    Text(text = "Hellloooooo")
+}
+
 
 @Composable
 fun ChatScreen() {
@@ -285,3 +313,54 @@ data class BottomNavItem(
     @DrawableRes val icon: Int,
     val badgeCount: Int = 0
 )
+
+
+//***************** Tab Layout *******************
+enum class TabPage(@DrawableRes val icon: Int) {
+    Likes(R.drawable.ic_love),
+    TopLikes(R.drawable.ic_love)
+}
+
+
+@Composable
+fun tabIndicator(tabPosition: List<TabPosition>, index: Int) {
+    val width = tabPosition[index].width
+    val offsetx = tabPosition[index].left
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .wrapContentSize(align = Alignment.BottomStart)
+            .offset()
+            .width(width = width)
+            .padding(4.dp)
+            .fillMaxSize()
+    )
+}
+
+@Composable
+fun TabHome(selectedTabIndex: Int, onSelectedTabPage: (TabPage) -> Unit) {
+    TabRow(
+        backgroundColor = Color.White, selectedTabIndex = selectedTabIndex
+        /* , indicator = {
+         tabIndicator(
+             tabPosition = it,
+             index = selectedTabIndex
+         )
+     }*/
+    ) {
+        TabPage.values().forEachIndexed { index, tabPage ->
+            Tab(
+                selected = index == selectedTabIndex, onClick = { onSelectedTabPage(tabPage) },
+                text = { Text(text = tabPage.name) },
+                /*   icon = {
+                       Icon(
+                           painter = painterResource(id = tabPage.icon),
+                           contentDescription = ""
+                       )
+                   },*/
+                selectedContentColor = Color.Black,
+                unselectedContentColor = Color.Gray
+            )
+        }
+    }
+}

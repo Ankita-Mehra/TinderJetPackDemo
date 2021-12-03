@@ -4,5 +4,5 @@
     <string name="title_activity_dash_board">DashBoardActivity</string>
     <string name="no_internet_title">No Internet</string>
     <string name="turn_on">Please turn on</string>
-    <string name="no_internet_body">You’re not connected to the Internet.\nPlease connect and retry.</string>
+    <string name="no_internet_body">You’re not connected to the Internet.\n\nPlease connect and retry.</string>
 </resources>

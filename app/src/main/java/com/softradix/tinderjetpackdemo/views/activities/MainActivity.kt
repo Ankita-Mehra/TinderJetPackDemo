@@ -1,9 +1,6 @@
 package com.softradix.tinderjetpackdemo.views.activities
 
 import android.app.Activity
-import android.content.BroadcastReceiver
-import android.content.IntentFilter
-import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.animation.OvershootInterpolator
 import android.widget.Toast
@@ -34,6 +31,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -51,10 +49,13 @@ import androidx.navigation.compose.rememberNavController
 import com.softradix.tinderjetpackdemo.R
 import com.softradix.tinderjetpackdemo.app.Status
 import com.softradix.tinderjetpackdemo.data.AuthViewModel
-import com.softradix.tinderjetpackdemo.network.NetworkChangeReceiver
+import com.softradix.tinderjetpackdemo.network.ConnectivityStatus
 import com.softradix.tinderjetpackdemo.ui.theme.TinderJetPackDemoTheme
-import com.softradix.tinderjetpackdemo.utils.*
+import com.softradix.tinderjetpackdemo.utils.PreferenceClass
 import com.softradix.tinderjetpackdemo.utils.PreferenceClass.Companion.TOKEN
+import com.softradix.tinderjetpackdemo.utils.ViewUtils
+import com.softradix.tinderjetpackdemo.utils.callActivity
+import com.softradix.tinderjetpackdemo.utils.toast
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
@@ -62,41 +63,41 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private lateinit var mInterNetCheckReceiver: BroadcastReceiver
-
     @ExperimentalComposeUiApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        mInterNetCheckReceiver =
-            NetworkChangeReceiver()      // register check internet broadcast receiver
-        @Suppress("DEPRECATION")
-        registerReceiver(
-            mInterNetCheckReceiver,
-            IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
-        )
 
         setContent {
             TinderJetPackDemoTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
                     Navigation()
+                    ConnectivityStatus()
                 }
             }
         }
     }
 
-
-    override fun onDestroy() {
-        super.onDestroy()
-        unregisterReceiver(mInterNetCheckReceiver)      // unregister check internet broadcast receiver
-    }
 }
 
+@Composable
+fun ShowConnectivityText() {
+    Text(
+        text = "Offline",
+        fontSize = 25.sp,
+        modifier = Modifier
+            .padding(5.dp)
+            .fillMaxWidth()
+            .offset(x = 5.dp),
+        fontFamily = FontFamily.Serif,
+        style = TextStyle(color = Color.White, background = Color.Red),
+    )
+}
 
 @ExperimentalComposeUiApi
 @Composable
 fun Navigation() {
+
     val navController = rememberNavController()
     val loginViewModel = hiltViewModel<AuthViewModel>()
     NavHost(

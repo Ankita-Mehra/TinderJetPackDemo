@@ -111,5 +111,7 @@ dependencies {
 
     //constraintLayout
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.0-beta02"
+    //pager
+    implementation "com.google.accompanist:accompanist-pager:0.20.0"
 
 }
