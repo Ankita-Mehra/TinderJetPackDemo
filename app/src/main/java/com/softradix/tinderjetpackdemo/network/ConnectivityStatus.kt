@@ -43,7 +43,7 @@ fun ConnectivityStatus() {
 @Composable
 fun ShowDialog() {
     Dialog(onDismissRequest = { /*TODO*/ }) {
-
+        //No Internet dialog
         Surface(
             modifier = Modifier
                 .padding(5.dp)

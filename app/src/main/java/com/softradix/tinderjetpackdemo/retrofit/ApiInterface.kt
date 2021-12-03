@@ -10,7 +10,6 @@ import javax.inject.Singleton
 
 @Singleton
 interface ApiInterface {
-
     @Headers("Accept: " + "application/json")
     @POST("auth/login")
     suspend fun login(@Body request: HashMap<String, String>): SignUpResponse

@@ -23,8 +23,7 @@ data class ApiState<out T>(val status: Status, val data: T?, val message: String
     }
 }
 
-// An enum to store the
-// current state of api call
+// An enum to store the current state of api call
 enum class Status {
     SUCCESS,
     ERROR,

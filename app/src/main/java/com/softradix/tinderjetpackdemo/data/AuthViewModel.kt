@@ -13,10 +13,9 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@HiltViewModel
+@HiltViewModel // to use viewModel with hilt -use this annotation
 class AuthViewModel @Inject constructor(private val userRepository: UserRepository) : ViewModel() {
-
-    private var _isLoading = MutableStateFlow(
+    private var _isLoading = MutableStateFlow( // function to show the loader
         ApiState(
             Status.LOADING,
             SignUpResponse(), ""

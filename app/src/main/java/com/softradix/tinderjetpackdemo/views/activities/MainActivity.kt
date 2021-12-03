@@ -37,7 +37,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -57,12 +56,14 @@ import com.softradix.tinderjetpackdemo.utils.ViewUtils
 import com.softradix.tinderjetpackdemo.utils.callActivity
 import com.softradix.tinderjetpackdemo.utils.toast
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @ExperimentalCoroutinesApi
     @ExperimentalComposeUiApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,7 +73,7 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
                     Navigation()
-                    ConnectivityStatus()
+                    ConnectivityStatus()  // showing this for network connectivity test
                 }
             }
         }
@@ -80,25 +81,13 @@ class MainActivity : ComponentActivity() {
 
 }
 
-@Composable
-fun ShowConnectivityText() {
-    Text(
-        text = "Offline",
-        fontSize = 25.sp,
-        modifier = Modifier
-            .padding(5.dp)
-            .fillMaxWidth()
-            .offset(x = 5.dp),
-        fontFamily = FontFamily.Serif,
-        style = TextStyle(color = Color.White, background = Color.Red),
-    )
-}
 
 @ExperimentalComposeUiApi
 @Composable
 fun Navigation() {
 
     val navController = rememberNavController()
+    //way to get the instance of the viewModel
     val loginViewModel = hiltViewModel<AuthViewModel>()
     NavHost(
         navController = navController,
@@ -162,7 +151,7 @@ fun RegisterScreen(
                     modifier = Modifier
                         .padding(5.dp)
                         .offset(x = 5.dp),
-                    fontFamily = androidx.compose.ui.text.font.FontFamily.Serif,
+                    fontFamily = FontFamily.Serif,
                     style = TextStyle(color = colorResource(id = R.color.black)),
                 )
 
@@ -172,7 +161,7 @@ fun RegisterScreen(
                     modifier = Modifier
                         .padding(5.dp)
                         .offset(x = 5.dp),
-                    fontFamily = androidx.compose.ui.text.font.FontFamily.Serif,
+                    fontFamily = FontFamily.Serif,
                     style = TextStyle(color = colorResource(id = R.color.black))
                 )
 
@@ -184,7 +173,7 @@ fun RegisterScreen(
                     label = { // giving hint label
                         Text(
                             text = "Email Address", style = TextStyle(
-                                fontFamily = androidx.compose.ui.text.font.FontFamily.Serif
+                                fontFamily = FontFamily.Serif
                             )
                         )
                     },
@@ -221,7 +210,7 @@ fun RegisterScreen(
                     label = { // giving hint label
                         Text(
                             text = "Password",
-                            fontFamily = androidx.compose.ui.text.font.FontFamily.Serif
+                            fontFamily = FontFamily.Serif
                         )
                     }, trailingIcon = {
                         val image = if (passwordVisibility)
@@ -267,7 +256,7 @@ fun RegisterScreen(
                     label = { // giving hint label
                         Text(
                             text = "Confirm Password",
-                            fontFamily = androidx.compose.ui.text.font.FontFamily.Serif
+                            fontFamily = FontFamily.Serif
                         )
                     },
                     trailingIcon = {
@@ -348,7 +337,7 @@ fun RegisterScreen(
                 text = "SIGN UP",
                 fontSize = 17.sp,
                 color = Color.White,
-                fontFamily = androidx.compose.ui.text.font.FontFamily.Serif
+                fontFamily = FontFamily.Serif
             )
         }
 
@@ -358,13 +347,13 @@ fun RegisterScreen(
                 text = "Already have an account? ",
                 fontSize = 17.sp,
                 color = Color.Gray,
-                fontFamily = androidx.compose.ui.text.font.FontFamily.Serif
+                fontFamily = FontFamily.Serif
             )
 
 
             ClickableText(
                 text = AnnotatedString("LOG IN"), style = TextStyle(
-                    fontSize = 16.sp, fontFamily = androidx.compose.ui.text.font.FontFamily.Serif,
+                    fontSize = 16.sp, fontFamily = FontFamily.Serif,
                     color = colorResource(id = R.color.app_color)
                 ),
                 onClick = {
@@ -379,6 +368,10 @@ fun RegisterScreen(
 //@SuppressLint("CoroutineCreationDuringComposition")
 @ExperimentalComposeUiApi
 @Composable
+/*
+for getting the viewModel object inside composable, we are using hiltViewModel() method to get the instance.
+basic syntax=loginViewModel: AuthViewModel = hiltViewModel()
+ */
 fun LoginScreen(loginViewModel: AuthViewModel = hiltViewModel(), navController: NavHostController) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -420,7 +413,7 @@ fun LoginScreen(loginViewModel: AuthViewModel = hiltViewModel(), navController: 
                     modifier = Modifier
                         .padding(5.dp)
                         .offset(x = 5.dp),
-                    fontFamily = androidx.compose.ui.text.font.FontFamily.Serif,
+                    fontFamily = FontFamily.Serif,
                     style = TextStyle(color = colorResource(id = R.color.black)),
                 )
 
@@ -430,7 +423,7 @@ fun LoginScreen(loginViewModel: AuthViewModel = hiltViewModel(), navController: 
                     modifier = Modifier
                         .padding(5.dp)
                         .offset(x = 5.dp),
-                    fontFamily = androidx.compose.ui.text.font.FontFamily.Serif,
+                    fontFamily = FontFamily.Serif,
                     style = TextStyle(color = colorResource(id = R.color.black))
                 )
 
@@ -442,7 +435,7 @@ fun LoginScreen(loginViewModel: AuthViewModel = hiltViewModel(), navController: 
                     label = { // giving hint label
                         Text(
                             text = "Email Address", style = TextStyle(
-                                fontFamily = androidx.compose.ui.text.font.FontFamily.Serif
+                                fontFamily = FontFamily.Serif
                             )
                         )
                     },
@@ -478,7 +471,7 @@ fun LoginScreen(loginViewModel: AuthViewModel = hiltViewModel(), navController: 
                     label = { // giving hint label
                         Text(
                             text = "Password",
-                            fontFamily = androidx.compose.ui.text.font.FontFamily.Serif
+                            fontFamily = FontFamily.Serif
                         )
                     }, trailingIcon = {
                         val image = if (passwordVisibility)
@@ -516,7 +509,7 @@ fun LoginScreen(loginViewModel: AuthViewModel = hiltViewModel(), navController: 
                 Text(
                     text = "Forget Password?",
                     fontSize = 18.sp,
-                    fontFamily = androidx.compose.ui.text.font.FontFamily.Serif,
+                    fontFamily = FontFamily.Serif,
                     modifier = Modifier
                         .align(Alignment.End)
                         .padding(start = 0.dp, top = 5.dp, bottom = 15.dp, end = 5.dp),
@@ -551,17 +544,20 @@ fun LoginScreen(loginViewModel: AuthViewModel = hiltViewModel(), navController: 
                         ).show()
                     }
                     else -> {
-
+                        //login api using flow
                         val hashMap = HashMap<String, String>()
                         hashMap["email"] = emailTextValue
                         hashMap["password"] = passwordTextValue
                         hashMap["device_token"] = "1234"
                         hashMap["device_type"] = "1"
 
-                        loginViewModel.userLogin(hashMap = hashMap)
+                        loginViewModel.userLogin(hashMap = hashMap) // api hit
 
-                        val dataStore = PreferenceClass(context)
+                        val dataStore = PreferenceClass(context) //get dataStore instance
 
+                        /*
+                        if you want to show loader on some event click then add it here. otherwise you need to add this scope observer outside this method.
+                         */
                         // Since flow run asynchronously,
                         // start listening on background thread
                         scope.launch {
@@ -569,7 +565,6 @@ fun LoginScreen(loginViewModel: AuthViewModel = hiltViewModel(), navController: 
                                 .collect {
                                     // When state to check the state of received data
                                     when (it.status) {
-
                                         // If its loading state then  show the progress bar
                                         Status.LOADING -> {
                                             ViewUtils.showProgress(activity)
@@ -587,9 +582,7 @@ fun LoginScreen(loginViewModel: AuthViewModel = hiltViewModel(), navController: 
                                                         DashBoardActivity()
                                                     )
 
-
-//                                                    dataStore.saveString(Constants.TOKEN, "1")
-                                                    dataStore.saveString(TOKEN, "1")
+                                                    dataStore.saveString(TOKEN, "1") //save data in datastore
                                                 } else {
                                                     (context as Activity).toast(response.message)
                                                 }
@@ -602,8 +595,7 @@ fun LoginScreen(loginViewModel: AuthViewModel = hiltViewModel(), navController: 
                                                 context,
                                                 "${it.message}",
                                                 Toast.LENGTH_SHORT
-                                            )
-                                                .show()
+                                            ).show()
                                         }
                                     }
                                 }
@@ -619,7 +611,7 @@ fun LoginScreen(loginViewModel: AuthViewModel = hiltViewModel(), navController: 
                 text = "LOG IN",
                 fontSize = 17.sp,
                 color = Color.White,
-                fontFamily = androidx.compose.ui.text.font.FontFamily.Serif
+                fontFamily = FontFamily.Serif
             )
         }
 
@@ -629,14 +621,14 @@ fun LoginScreen(loginViewModel: AuthViewModel = hiltViewModel(), navController: 
                 text = "New User? ",
                 fontSize = 17.sp,
                 color = Color.Gray,
-                fontFamily = androidx.compose.ui.text.font.FontFamily.Serif
+                fontFamily =FontFamily.Serif
             )
 
 
 
             ClickableText(
                 text = AnnotatedString("REGISTER"), style = TextStyle(
-                    fontSize = 16.sp, fontFamily = androidx.compose.ui.text.font.FontFamily.Serif,
+                    fontSize = 16.sp, fontFamily = FontFamily.Serif,
                     color = colorResource(id = R.color.app_color)
                 ),
                 onClick = {
@@ -647,6 +639,9 @@ fun LoginScreen(loginViewModel: AuthViewModel = hiltViewModel(), navController: 
     }
 }
 
+/*
+Custom animated Splash screen
+ */
 
 @Composable
 fun SplashScreen(navController: NavController) {
@@ -685,12 +680,6 @@ fun SplashScreen(navController: NavController) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    TinderJetPackDemoTheme {
-    }
-}
 
 
 

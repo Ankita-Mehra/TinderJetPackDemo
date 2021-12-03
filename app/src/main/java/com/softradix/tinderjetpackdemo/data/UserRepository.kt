@@ -11,11 +11,10 @@ import javax.inject.Inject
 
 
 class UserRepository @Inject constructor(private val apiInterface: ApiInterface) {
-
     suspend fun userLogin(hashMap: HashMap<String, String>): Flow<ApiState<SignUpResponse>> {
         return flow {
 
-            // get the comment Data from the api
+            // get the login Data from the api
             val response = apiInterface.login(hashMap)
 
             // Emit this data wrapped in

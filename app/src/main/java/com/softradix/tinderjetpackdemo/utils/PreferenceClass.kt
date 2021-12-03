@@ -10,6 +10,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
+/*
+  Datastore for Jetpack
+ */
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
     name = Constants.PREFERENCE_NAME
 )
@@ -46,17 +49,13 @@ class PreferenceClass(private val context: Context) {
             it[dataStoreKey]
         }
     }
-    /*  val lastPlayedSong: Flow<String> = context.dataStore.data
-          .map { preferences ->
-              preferences[stringPreferencesKey(key)] ?: ""
-          }*/
 
     companion object {
         val TOKEN = stringPreferencesKey("token")
     }
 
 
-    fun getToken() = context.dataStore.data.map {
+    fun getToken() = context.dataStore.data.map { // getting data for particular key. Need to do it this way using flow
         it[TOKEN] ?: ""
     }
 

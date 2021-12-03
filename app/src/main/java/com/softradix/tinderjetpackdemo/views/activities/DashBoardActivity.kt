@@ -140,13 +140,10 @@ class DashBoardActivity : ComponentActivity() {
                 }) {
                     Navigation(navHostController = navController)
                 }
-
                 //internet check
                 ConnectivityStatus()
             }
         }
-
-
     }
 
 
@@ -263,6 +260,7 @@ fun MatchScreen() {
             }
         }
 
+        //for horizontal scrolling of tabs
         /*  HorizontalPager(count = TabPage.values().size, state = pagerState) { index ->
               Column(Modifier.fillMaxSize()) {
                   Text(text = TabPage.values()[index].name)
@@ -299,14 +297,7 @@ fun ProfileScreen() {
 }
 
 
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview2() {
-    TinderJetPackDemoTheme {
-
-    }
-}
-
+// bottom navigation item class
 data class BottomNavItem(
     val title: String,
     val route: String,
@@ -321,7 +312,7 @@ enum class TabPage(@DrawableRes val icon: Int) {
     TopLikes(R.drawable.ic_love)
 }
 
-
+// for tab inicater
 @Composable
 fun tabIndicator(tabPosition: List<TabPosition>, index: Int) {
     val width = tabPosition[index].width
@@ -337,6 +328,7 @@ fun tabIndicator(tabPosition: List<TabPosition>, index: Int) {
     )
 }
 
+// function for setting the basic requirement for tabs
 @Composable
 fun TabHome(selectedTabIndex: Int, onSelectedTabPage: (TabPage) -> Unit) {
     TabRow(
