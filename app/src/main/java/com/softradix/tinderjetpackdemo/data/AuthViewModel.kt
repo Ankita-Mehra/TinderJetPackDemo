@@ -31,7 +31,6 @@ class AuthViewModel @Inject constructor(private val userRepository: UserReposito
         // ApiCalls takes some time, So it has to be run on background thread. Using viewModelScope
         // to call the api
         viewModelScope.launch {
-
             // Collecting the data emitted by the function in repository
             userRepository.userLogin(hashMap)
                 // If any errors occurs like 404 not found or invalid query, set the state to error
@@ -40,13 +39,10 @@ class AuthViewModel @Inject constructor(private val userRepository: UserReposito
                     _isLoading.value =
                         ApiState.error(it.message.toString())
                 }
-
                 //If Api call is succeeded, set the State to Success and set the response data to data received from api
                 .collect {
                     _isLoading.value = ApiState.success(it.data)
                 }
         }
-
     }
-
 }

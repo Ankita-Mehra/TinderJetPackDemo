@@ -6,10 +6,12 @@ import android.view.animation.OvershootInterpolator
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
@@ -22,6 +24,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -32,10 +35,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,9 +50,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.pager.*
 import com.softradix.tinderjetpackdemo.R
 import com.softradix.tinderjetpackdemo.app.Status
 import com.softradix.tinderjetpackdemo.data.AuthViewModel
+import com.softradix.tinderjetpackdemo.modelClass.OnBoardingViewModel
+import com.softradix.tinderjetpackdemo.modelClass.onBoardItems
 import com.softradix.tinderjetpackdemo.network.ConnectivityStatus
 import com.softradix.tinderjetpackdemo.ui.theme.TinderJetPackDemoTheme
 import com.softradix.tinderjetpackdemo.utils.PreferenceClass
@@ -60,7 +68,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.util.*
+import kotlin.collections.HashMap
 
+@ExperimentalPagerApi
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @ExperimentalCoroutinesApi
@@ -78,10 +89,9 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
 }
 
-
+@ExperimentalPagerApi
 @ExperimentalComposeUiApi
 @Composable
 fun Navigation() {
@@ -91,7 +101,7 @@ fun Navigation() {
     val loginViewModel = hiltViewModel<AuthViewModel>()
     NavHost(
         navController = navController,
-        startDestination = "login_screen"
+        startDestination = "onBoard_screen"
     ) {
         composable("login_screen") {
             LoginScreen(loginViewModel, navController)
@@ -100,7 +110,173 @@ fun Navigation() {
         composable("register_screen") {
             RegisterScreen(loginViewModel, navController)
         }
+
+        composable("onBoard_screen") {
+            OnBoardScreen(navController)
+        }
     }
+}
+
+
+@ExperimentalPagerApi
+@Composable
+fun OnBoardScreen(navController: NavHostController) {
+    val onBoardViewModel = hiltViewModel<OnBoardingViewModel>()
+    val scaffoldState = rememberScaffoldState()
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val currentPage = onBoardViewModel.currentPage.collectAsState()
+
+    val pagerState = rememberPagerState(
+        pageCount = onBoardItems.size,
+        initialPage = 0,
+        infiniteLoop = false,
+        initialOffscreenLimit = 3
+    )
+    Scaffold(modifier = Modifier.fillMaxSize(), scaffoldState = scaffoldState) {
+        /* scope.launch {
+             pagerState.animateScrollToPage(page = currentPage.value)
+         }*/
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+        ) {
+
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+                HorizontalPager(state = pagerState) { page ->
+                    Column(
+                        modifier = Modifier
+                            .padding(top = 25.dp)
+                            .fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+
+                        Image(
+                            painter = painterResource(id = onBoardItems[page].image),
+                            contentDescription = "",
+                            modifier = Modifier.size(270.dp)
+                        )
+
+                        Text(
+                            text = onBoardItems[page].title.uppercase(Locale.getDefault()),
+                            modifier = Modifier.padding(top = 20.dp),
+                            color = Color.Black,
+                            style = TextStyle(),
+                            fontFamily = FontFamily.Serif,
+                            fontWeight = FontWeight.Bold, fontSize = 24.sp
+                        )
+
+                        Text(
+                            text = onBoardItems[page].desc,
+                            modifier = Modifier.padding(top = 10.dp, start = 20.dp, end = 20.dp),
+                            color = Color.Black,
+                            fontFamily = FontFamily.Serif, textAlign = TextAlign.Center,
+                            fontSize = 20.sp
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.size(10.dp))
+                PagerIndicator(
+                    size = onBoardItems.size,
+                    currentPage = pagerState.currentPage,
+                    pagerState
+                )
+
+                Spacer(modifier = Modifier.size(10.dp))
+
+                Box {
+                    Column(
+                        modifier = Modifier
+                            .padding(bottom = 10.dp, start = 30.dp, end = 30.dp, top = 20.dp)
+                            .fillMaxWidth()
+                    ) {
+                        OutlinedButton(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 20.dp),
+                            onClick = {
+                                navController.navigate("login_screen")
+                            },
+                            shape = RoundedCornerShape(45.dp),
+                            colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(id = R.color.app_color))
+                        ) {
+                            Text(
+                                text = "LOG IN",
+                                fontFamily = FontFamily.Serif,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier.padding(vertical = 8.dp, horizontal = 30.dp),
+                                color = Color.White
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.size(15.dp))
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "New User? ".uppercase(),
+                                fontSize = 17.sp,
+                                color = Color.Gray,
+                                fontFamily = FontFamily.Serif
+                            )
+                            ClickableText(
+                                text = AnnotatedString("REGISTER"), style = TextStyle(
+                                    fontSize = 16.sp, fontFamily = FontFamily.Serif,
+                                    color = colorResource(id = R.color.app_color)
+                                ),
+                                onClick = {
+                                    navController.navigate("register_screen")
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+}
+
+
+@ExperimentalPagerApi
+@Composable
+fun PagerIndicator(size: Int, currentPage: Int, pagerState: PagerState) {
+    /* Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.padding(20.dp)) {
+         repeat(size) {
+             IndicatorIcon(isSelected = it == currentPage)
+         }
+     }*/
+
+    HorizontalPagerIndicator(
+        pagerState = pagerState,
+        activeColor = colorResource(id = R.color.app_color),
+        inactiveColor = Color.Gray
+    )
+}
+
+@Composable
+fun IndicatorIcon(isSelected: Boolean) {
+    val width = animateDpAsState(targetValue = if (isSelected) 10.dp else 10.dp)
+
+    Box(
+        modifier = Modifier
+            .padding(2.dp)
+            .height(10.dp)
+            .width(width = width.value)
+            .clip(CircleShape)
+            .background(
+                if (isSelected) {
+                    colorResource(id = R.color.app_color)
+                } else {
+                    Color.Gray.copy(alpha = 0.5f)
+                }
+            )
+    )
 }
 
 @ExperimentalComposeUiApi
@@ -357,7 +533,7 @@ fun RegisterScreen(
                     color = colorResource(id = R.color.app_color)
                 ),
                 onClick = {
-                    navController.navigateUp()
+                    navController.navigate("login_screen")
                 }
             )
         }
@@ -582,7 +758,10 @@ fun LoginScreen(loginViewModel: AuthViewModel = hiltViewModel(), navController: 
                                                         DashBoardActivity()
                                                     )
 
-                                                    dataStore.saveString(TOKEN, "1") //save data in datastore
+                                                    dataStore.saveString(
+                                                        TOKEN,
+                                                        "1"
+                                                    ) //save data in datastore
                                                 } else {
                                                     (context as Activity).toast(response.message)
                                                 }
@@ -621,7 +800,7 @@ fun LoginScreen(loginViewModel: AuthViewModel = hiltViewModel(), navController: 
                 text = "New User? ",
                 fontSize = 17.sp,
                 color = Color.Gray,
-                fontFamily =FontFamily.Serif
+                fontFamily = FontFamily.Serif
             )
 
 

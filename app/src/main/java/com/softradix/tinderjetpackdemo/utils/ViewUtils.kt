@@ -21,6 +21,7 @@ object ViewUtils {
             }
         }
 
+
         mProgressDialog?.window?.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         mProgressDialog?.window?.statusBarColor = Color.parseColor("#E2FFFFFF")
 

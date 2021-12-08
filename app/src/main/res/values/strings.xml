@@ -5,4 +5,7 @@
     <string name="no_internet_title">No Internet</string>
     <string name="turn_on">Please turn on</string>
     <string name="no_internet_body">You’re not connected to the Internet.\n\nPlease connect and retry.</string>
+    <string name="compose_shortcut_short_label1">Hloo</string>
+    <string name="compose_shortcut_long_label1">DashBoard Tundur</string>
+    <string name="compose_disabled_message1">Hi Dost</string>
 </resources>

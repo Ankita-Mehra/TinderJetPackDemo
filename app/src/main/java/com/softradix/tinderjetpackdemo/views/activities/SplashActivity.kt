@@ -7,12 +7,14 @@ import android.os.Handler
 import android.os.Looper
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.lifecycleScope
+import com.google.accompanist.pager.ExperimentalPagerApi
 import com.softradix.tinderjetpackdemo.utils.PreferenceClass
 import kotlinx.coroutines.flow.collect
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : ComponentActivity() {
 
+    @ExperimentalPagerApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val dataStore = PreferenceClass(this) // instance of the datastore class

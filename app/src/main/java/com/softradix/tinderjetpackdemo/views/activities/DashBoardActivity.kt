@@ -4,19 +4,22 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -237,7 +240,7 @@ fun HomeScreen() {
 @Composable
 fun MatchScreen() {
     TabPage.values().size
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState(TabPage.values().size)
     var tabPage by remember { mutableStateOf(TabPage.Likes) }
     val scope = rememberCoroutineScope()
     Scaffold(topBar = {
@@ -245,14 +248,14 @@ fun MatchScreen() {
             // if you use no pagerState
             selectedTabIndex = tabPage.ordinal, onSelectedTabPage = { tabPage = it },
         )
-        /*TabHome(
-            selectedTabIndex = pagerState.currentPage,
-            onSelectedTabPage = {
-                scope.launch {
-                    pagerState.animateScrollToPage(it.ordinal)
-                }
-            },
-        )*/
+        /*  TabHome(
+              selectedTabIndex = pagerState.currentPage,
+              onSelectedTabPage = {
+                  scope.launch {
+                      pagerState.animateScrollToPage(it.ordinal)
+                  }
+              },
+          )*/
     }) {
         Column() {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -260,18 +263,17 @@ fun MatchScreen() {
             }
         }
 
-        //for horizontal scrolling of tabs
-        /*  HorizontalPager(count = TabPage.values().size, state = pagerState) { index ->
-              Column(Modifier.fillMaxSize()) {
-                  Text(text = TabPage.values()[index].name)
+        /*   //for horizontal scrolling of tabs
+           HorizontalPager(state = pagerState) { index ->
+               Column(Modifier.fillMaxSize()) {
+                   Text(text = TabPage.values()[index].name)
 
-                  when (index) {
-                      0 -> MatchScreen()
-                      1 -> LikeScreen()
-                  }
-              }
-
-          }*/
+                   when (index) {
+                       0 -> MatchScreen()
+                       1 -> LikeScreen()
+                   }
+               }
+           }*/
     }
 }
 
@@ -284,8 +286,52 @@ fun LikeScreen() {
 
 @Composable
 fun ChatScreen() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(text = "Chat Screen")
+    MessageList()
+}
+
+@Composable
+fun MessageList() {
+    val itemList = listOf(
+        "Anki", "Harsh", "Pranjul", "Akshay", "Simer", "Pooja", "Ravi"
+    )
+    LazyColumn(
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+        modifier = Modifier.padding(bottom = 50.dp)
+    ) {
+
+        items(itemList) { data ->
+            ChatListItem(data)
+        }
+    }
+}
+
+@Composable
+fun ChatListItem(itemList: String) {
+    Card(
+        elevation = 4.dp, modifier = Modifier
+            .padding(10.dp)
+            .fillMaxWidth()
+    ) {
+        Row(
+            modifier =
+            Modifier.padding(5.dp)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ghost),
+                contentDescription = "",
+                Modifier
+                    .size(35.dp)
+                    .padding(top = 8.dp),
+                alignment = Alignment.Center,
+                colorFilter = ColorFilter.tint(
+                    colorResource(id = R.color.app_color)
+                )
+            )
+            Column(modifier = Modifier.padding(10.dp)) {
+                Text(text = itemList, style = MaterialTheme.typography.h6)
+                Text(text = "2hr ago", color = Color.Gray, textAlign = TextAlign.End)
+            }
+        }
     }
 }
 
