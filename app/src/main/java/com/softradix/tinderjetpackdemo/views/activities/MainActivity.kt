@@ -10,6 +10,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,6 +29,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
@@ -114,6 +116,257 @@ fun Navigation() {
         composable("onBoard_screen") {
             OnBoardScreen(navController)
         }
+
+        composable("forget_password") {
+            ForgetPasswordScreen(navController)
+        }
+
+        composable("otp_screen") {
+            OTPScreen(navController)
+        }
+    }
+}
+
+@Composable
+fun OTPScreen(navController: NavHostController) {
+    val context = LocalContext.current
+    var otpVal: String? = null
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+        Spacer(modifier = Modifier.size(20.dp))
+        Image(
+            painter = painterResource(id = R.drawable.ic_tundur_logo),
+            contentDescription = "Logo",
+            modifier = Modifier
+                .height(100.dp)
+                .width(100.dp)
+        )
+
+        Card(
+            shape = RoundedCornerShape(20.dp),
+            elevation = 3.dp, modifier = Modifier
+                .padding(20.dp)
+        ) {
+            Column(
+                horizontalAlignment = Alignment.Start,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+            ) {
+                Text(
+                    text = "EMAIL VERIFICATION",
+                    fontSize = 25.sp,
+                    modifier = Modifier
+                        .padding(5.dp)
+                        .offset(x = 5.dp),
+                    fontFamily = FontFamily.Serif,
+                    style = TextStyle(color = colorResource(id = R.color.black)),
+                )
+
+                Text(
+                    text = "Please type the verification code sent to your email.",
+                    fontSize = 18.sp,
+                    modifier = Modifier
+                        .padding(5.dp)
+                        .offset(x = 5.dp),
+                    fontFamily = FontFamily.Serif,
+                    style = TextStyle(color = colorResource(id = R.color.black))
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+                OtpTextFields(
+                    length = 6
+                ) {
+                    otpVal = it
+                }
+
+                Spacer(modifier = Modifier.size(30.dp))
+            }
+        }//end of card
+
+        Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp)
+                .height(50.dp),
+            onClick = { //sending normal string to register screen
+                when {
+                    otpVal.toString().length < 6 -> {
+                        Toast.makeText(context, "Please Enter valid Otp", Toast.LENGTH_SHORT).show()
+                    }
+                    else -> {
+                        Toast.makeText(context, "Entered", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            },
+            colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(id = R.color.app_color)),
+            shape = RoundedCornerShape(30.dp)
+        ) {
+            Text(
+                text = "VERIFY",
+                fontSize = 17.sp,
+                color = White,
+                fontFamily = FontFamily.Serif
+            )
+        }
+
+        Spacer(modifier = Modifier.size(10.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = "Don’t receive the OTP? ".uppercase(),
+                fontSize = 17.sp,
+                color = Color.Gray,
+                fontFamily = FontFamily.Serif
+            )
+
+            ClickableText(
+                text = AnnotatedString("RESEND OTP"), style = TextStyle(
+                    fontSize = 16.sp, fontFamily = FontFamily.Serif,
+                    color = colorResource(id = R.color.app_color)
+                ),
+                onClick = {
+                    navController.navigateUp()
+                }
+            )
+        }
+    }
+}
+
+@ExperimentalComposeUiApi
+@Composable
+fun ForgetPasswordScreen(navController: NavHostController) {
+    val context = LocalContext.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+        var emailTextValue by remember {
+            mutableStateOf("")
+        }
+
+        Spacer(modifier = Modifier.size(20.dp))
+        Image(
+            painter = painterResource(id = R.drawable.ic_tundur_logo),
+            contentDescription = "Logo",
+            modifier = Modifier
+                .height(100.dp)
+                .width(100.dp)
+        )
+
+        Card(
+            shape = RoundedCornerShape(20.dp),
+            elevation = 3.dp, modifier = Modifier
+                .padding(20.dp)
+        ) {
+            Column(
+                horizontalAlignment = Alignment.Start,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+            ) {
+                Text(
+                    text = "FORGOT PASSWORD",
+                    fontSize = 25.sp,
+                    modifier = Modifier
+                        .padding(5.dp)
+                        .offset(x = 5.dp),
+                    fontFamily = FontFamily.Serif,
+                    style = TextStyle(color = colorResource(id = R.color.black)),
+                )
+
+                Text(
+                    text = "Enter your Email that is registered with your account. \n\nWe will email you a link to reset a password.",
+                    fontSize = 18.sp,
+                    modifier = Modifier
+                        .padding(5.dp)
+                        .offset(x = 5.dp),
+                    fontFamily = FontFamily.Serif,
+                    style = TextStyle(color = colorResource(id = R.color.black))
+                )
+
+                Spacer(modifier = Modifier.size(10.dp))
+                TextField(value = emailTextValue,
+                    onValueChange = { newText ->
+                        emailTextValue = newText
+                    },
+                    label = { // giving hint label
+                        Text(
+                            text = "Email Address", style = TextStyle(
+                                fontFamily = FontFamily.Serif
+                            )
+                        )
+                    },
+                    maxLines = 1,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Email,
+                        imeAction = ImeAction.Next
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onNext = {
+                            keyboardController?.hide()
+                        }
+                    ),
+                    colors = TextFieldDefaults.textFieldColors(
+                        focusedIndicatorColor = colorResource(id = R.color.app_color),
+                        focusedLabelColor = colorResource(
+                            id = R.color.app_color
+                        ),
+                        backgroundColor = White
+                    ), modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp)
+                )
+                Spacer(modifier = Modifier.size(30.dp))
+            }
+        }//end of card
+
+        Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp)
+                .height(50.dp),
+            onClick = { //sending normal string to register screen
+                when {
+                    emailTextValue.isEmpty() -> {
+                        Toast.makeText(
+                            context,
+                            "Please enter your email.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    else -> {
+                        navController.navigate("otp_screen")
+                    }
+                }
+            },
+            colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(id = R.color.app_color)),
+            shape = RoundedCornerShape(30.dp)
+        ) {
+            Text(
+                text = "Send".uppercase(),
+                fontSize = 17.sp,
+                color = White,
+                fontFamily = FontFamily.Serif
+            )
+        }
+        Spacer(modifier = Modifier.size(10.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = "Go Back ".uppercase(),
+                fontSize = 17.sp,
+                color = Color.Gray,
+                fontFamily = FontFamily.Serif
+            )
+            ClickableText(
+                text = AnnotatedString("SIGN IN"), style = TextStyle(
+                    fontSize = 16.sp, fontFamily = FontFamily.Serif,
+                    color = colorResource(id = R.color.app_color)
+                ),
+                onClick = {
+                    navController.navigateUp()
+                }
+            )
+        }
     }
 }
 
@@ -140,11 +393,10 @@ fun OnBoardScreen(navController: NavHostController) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.White)
+                .background(White)
         ) {
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-
                 HorizontalPager(state = pagerState) { page ->
                     Column(
                         modifier = Modifier
@@ -178,15 +430,13 @@ fun OnBoardScreen(navController: NavHostController) {
                     }
                 }
 
-                Spacer(modifier = Modifier.size(10.dp))
+                Spacer(modifier = Modifier.size(30.dp))
                 PagerIndicator(
                     size = onBoardItems.size,
                     currentPage = pagerState.currentPage,
                     pagerState
                 )
-
                 Spacer(modifier = Modifier.size(10.dp))
-
                 Box {
                     Column(
                         modifier = Modifier
@@ -208,7 +458,7 @@ fun OnBoardScreen(navController: NavHostController) {
                                 fontFamily = FontFamily.Serif,
                                 fontWeight = FontWeight.SemiBold,
                                 modifier = Modifier.padding(vertical = 8.dp, horizontal = 30.dp),
-                                color = Color.White
+                                color = White
                             )
                         }
 
@@ -237,9 +487,7 @@ fun OnBoardScreen(navController: NavHostController) {
                 }
             }
         }
-
     }
-
 }
 
 
@@ -262,7 +510,6 @@ fun PagerIndicator(size: Int, currentPage: Int, pagerState: PagerState) {
 @Composable
 fun IndicatorIcon(isSelected: Boolean) {
     val width = animateDpAsState(targetValue = if (isSelected) 10.dp else 10.dp)
-
     Box(
         modifier = Modifier
             .padding(2.dp)
@@ -365,7 +612,10 @@ fun RegisterScreen(
                     ),
                     colors = TextFieldDefaults.textFieldColors(
                         focusedIndicatorColor = colorResource(id = R.color.app_color),
-                        backgroundColor = Color.White
+                        focusedLabelColor = colorResource(
+                            id = R.color.app_color
+                        ),
+                        backgroundColor = White
                     ), modifier = Modifier
                         .fillMaxWidth()
                         .padding(10.dp)
@@ -413,7 +663,10 @@ fun RegisterScreen(
                     ),
                     colors = TextFieldDefaults.textFieldColors(
                         focusedIndicatorColor = colorResource(id = R.color.app_color),
-                        backgroundColor = Color.White
+                        focusedLabelColor = colorResource(
+                            id = R.color.app_color
+                        ),
+                        backgroundColor = White
                     ), modifier = Modifier
                         .fillMaxWidth()
                         .padding(10.dp)
@@ -460,7 +713,10 @@ fun RegisterScreen(
                     ),
                     colors = TextFieldDefaults.textFieldColors(
                         focusedIndicatorColor = colorResource(id = R.color.app_color),
-                        backgroundColor = Color.White
+                        focusedLabelColor = colorResource(
+                            id = R.color.app_color
+                        ),
+                        backgroundColor = White
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -512,7 +768,7 @@ fun RegisterScreen(
             Text(
                 text = "SIGN UP",
                 fontSize = 17.sp,
-                color = Color.White,
+                color = White,
                 fontFamily = FontFamily.Serif
             )
         }
@@ -610,7 +866,8 @@ fun LoginScreen(loginViewModel: AuthViewModel = hiltViewModel(), navController: 
                     },
                     label = { // giving hint label
                         Text(
-                            text = "Email Address", style = TextStyle(
+                            text = "Email Address",
+                            style = TextStyle(
                                 fontFamily = FontFamily.Serif
                             )
                         )
@@ -627,7 +884,10 @@ fun LoginScreen(loginViewModel: AuthViewModel = hiltViewModel(), navController: 
                     ),
                     colors = TextFieldDefaults.textFieldColors(
                         focusedIndicatorColor = colorResource(id = R.color.app_color),
-                        backgroundColor = Color.White
+                        focusedLabelColor = colorResource(
+                            id = R.color.app_color
+                        ),
+                        backgroundColor = White
                     ), modifier = Modifier
                         .fillMaxWidth()
                         .padding(10.dp)
@@ -674,7 +934,10 @@ fun LoginScreen(loginViewModel: AuthViewModel = hiltViewModel(), navController: 
                     ),
                     colors = TextFieldDefaults.textFieldColors(
                         focusedIndicatorColor = colorResource(id = R.color.app_color),
-                        backgroundColor = Color.White
+                        focusedLabelColor = colorResource(
+                            id = R.color.app_color
+                        ),
+                        backgroundColor = White
                     ), modifier = Modifier
                         .fillMaxWidth()
                         .padding(10.dp)
@@ -688,6 +951,9 @@ fun LoginScreen(loginViewModel: AuthViewModel = hiltViewModel(), navController: 
                     fontFamily = FontFamily.Serif,
                     modifier = Modifier
                         .align(Alignment.End)
+                        .clickable {
+                            navController.navigate("forget_password")
+                        }
                         .padding(start = 0.dp, top = 5.dp, bottom = 15.dp, end = 5.dp),
                     style = TextStyle(
                         color = colorResource(id = R.color.app_color),
@@ -789,7 +1055,7 @@ fun LoginScreen(loginViewModel: AuthViewModel = hiltViewModel(), navController: 
             Text(
                 text = "LOG IN",
                 fontSize = 17.sp,
-                color = Color.White,
+                color = White,
                 fontFamily = FontFamily.Serif
             )
         }
@@ -802,8 +1068,6 @@ fun LoginScreen(loginViewModel: AuthViewModel = hiltViewModel(), navController: 
                 color = Color.Gray,
                 fontFamily = FontFamily.Serif
             )
-
-
 
             ClickableText(
                 text = AnnotatedString("REGISTER"), style = TextStyle(
