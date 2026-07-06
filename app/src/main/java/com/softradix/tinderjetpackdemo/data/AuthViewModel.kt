@@ -9,16 +9,16 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel // to use viewModel with hilt -use this annotation
 class AuthViewModel @Inject constructor(private val userRepository: UserRepository) : ViewModel() {
-    private var _isLoading = MutableStateFlow( // function to show the loader
+    private var _isLoading = MutableStateFlow(
         ApiState(
             Status.LOADING,
-            SignUpResponse(), ""
+            SignUpResponse(),
+            "",
         )
     )
     val isLoading: StateFlow<ApiState<SignUpResponse>> = _isLoading

@@ -1,7 +1,6 @@
 package com.softradix.tinderjetpackdemo.retrofit
 
 import com.softradix.tinderjetpackdemo.modelClass.SignUpResponse
-import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.Headers
 import retrofit2.http.POST

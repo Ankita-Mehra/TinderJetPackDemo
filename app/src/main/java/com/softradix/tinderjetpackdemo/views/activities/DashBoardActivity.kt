@@ -181,7 +181,7 @@ fun BottomNavigationBar(
 ) {
 
     val backStackEntry =
-        navController.currentBackStackEntryAsState() //becoz state get recompose only
+        navController.currentBackStackEntryAsState() //bcz state get recompose only
     BottomNavigation(modifier = modifier, backgroundColor = Color.White, elevation = 5.dp) {
 
         items.forEach { item ->
@@ -196,8 +196,10 @@ fun BottomNavigationBar(
                 icon = {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         if (item.badgeCount > 0) {
-                            BadgeBox(badgeContent = {
-                                Text(text = item.badgeCount.toString())
+                            BadgedBox(badge = {
+                                Badge {
+                                    Text(text = item.badgeCount.toString())
+                                }
                             }) {
                                 Icon(
                                     modifier = Modifier.size(18.dp),

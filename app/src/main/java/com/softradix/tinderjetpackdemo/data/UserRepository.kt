@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 
 class UserRepository @Inject constructor(private val apiInterface: ApiInterface) {
-    suspend fun userLogin(hashMap: HashMap<String, String>): Flow<ApiState<SignUpResponse>> {
+    fun userLogin(hashMap: HashMap<String, String>): Flow<ApiState<SignUpResponse>> {
         return flow {
 
             // get the login Data from the api

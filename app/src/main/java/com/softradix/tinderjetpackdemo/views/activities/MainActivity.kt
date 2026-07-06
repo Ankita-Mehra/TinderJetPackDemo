@@ -68,7 +68,6 @@ import com.softradix.tinderjetpackdemo.utils.toast
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.HashMap
